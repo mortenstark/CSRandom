@@ -18,6 +18,10 @@ textarea {
     max-width: 280px;
 }
 
+.line {
+    margin:10px;
+}
+
 
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
@@ -27,5 +31,8 @@ textarea {
 
     .body-content {
         padding: 0;
+    }
+    .line {
+        margin: 10px;
     }
 }
