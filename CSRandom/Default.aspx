@@ -40,7 +40,7 @@
                     return;
                 }
                 var val = $("input[name$='amountTxt']").val();
-                if (e.keyCode < 48 || e.keyCode > 57)
+                if (!((e.keyCode > 47 && e.keyCode < 58) || (e.keyCode > 95 && e.keyCode < 106)))
                     return;
                 var numbers = val.match(/[+-]?\d+(?:\.\d+)?/g);
                 if (numbers.toString().length == 2) {

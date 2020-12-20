@@ -26,8 +26,46 @@ namespace CSRandom
             Weapon weapon = new Weapon();
             if (!topup)
             {
-                if (money >= 7300) {
-                    if (money <= 7700)
+                if (money >= 5200)
+                {
+                    next = RandomNumber.Between(1, 3);
+                    if (next == 1)
+                    {
+                        weapon = new Weapon();
+                        weapon.Type = Type.Heavy;
+                        weapon.Name = "M249";
+                        weapon.Price = 5200;
+                        weapon.Side = Side.Both;
+                        weapon.Key = 4;
+                        weapon.BuyName = "m249";
+                        Weapons.Add(weapon);
+                    }
+                    else if (next == 2)
+                    {
+                        if (side == Side.Terrorist)
+                        {
+                            weapon = new Weapon();
+                            weapon.Type = Type.Rifle;
+                            weapon.Name = "G3SG1";
+                            weapon.Price = 5000;
+                            weapon.Side = Side.Terrorist;
+                            weapon.Key = 6;
+                            weapon.BuyName = "g3sg1";
+                            Weapons.Add(weapon);
+                        }
+                        else
+                        {
+                            weapon = new Weapon();
+                            weapon.Type = Type.Rifle;
+                            weapon.Name = "SCAR-20";
+                            weapon.Price = 5000;
+                            weapon.Side = Side.CounterTerrorist;
+                            weapon.Key = 6;
+                            weapon.BuyName = "scar20";
+                            Weapons.Add(weapon);
+                        }
+                    }
+                    else
                     {
                         weapon = new Weapon();
                         weapon.Type = Type.Rifle;
@@ -37,51 +75,9 @@ namespace CSRandom
                         weapon.Key = 5;
                         weapon.BuyName = "awp";
                     }
-                    else
-                    {
-                        next = RandomNumber.Between(1, 2);
-                        if (next == 2)
-                        {
-                            if (side == Side.Terrorist)
-                            {
-                                weapon = new Weapon();
-                                weapon.Type = Type.Rifle;
-                                weapon.Name = "G3SG1";
-                                weapon.Price = 5000;
-                                weapon.Side = Side.Terrorist;
-                                weapon.Key = 6;
-                                weapon.BuyName = "g3sg1";
-                                Weapons.Add(weapon);
-                            }
-                            else
-                            {
-                                weapon = new Weapon();
-                                weapon.Type = Type.Rifle;
-                                weapon.Name = "SCAR-20";
-                                weapon.Price = 5000;
-                                weapon.Side = Side.CounterTerrorist;
-                                weapon.Key = 6;
-                                weapon.BuyName = "scar20";
-                                Weapons.Add(weapon);
-                            }
-                        }
-                        else
-                        {
-                            weapon = new Weapon();
-                            weapon.Type = Type.Rifle;
-                            weapon.Name = "AWP";
-                            weapon.Price = 4750;
-                            weapon.Side = Side.Both;
-                            weapon.Key = 5;
-                            weapon.BuyName = "awp";
-                        }
-
-                    }
                     selectedWeapons.Add(weapon);
-                    money -= weapon.Price; 
-
+                    money -= weapon.Price;
                 }
-
                 else
                 {
                     weapon = GetWeaponType(allWeapons, (Type)next, selectedWeapons);
@@ -212,7 +208,7 @@ namespace CSRandom
             weapon = new Weapon();
             weapon.Type = Type.Pistol;
             weapon.Name = "Glock-18";
-            weapon.Price = 0;           
+            weapon.Price = 0;
             weapon.Side = Side.Terrorist;
             weapon.Key = 1;
             weapon.BuyName = "glock18";
@@ -362,7 +358,7 @@ namespace CSRandom
             weapon.BuyName = "sg556";
             Weapons.Add(weapon);
 
-            weapon = new Weapon(); 
+            weapon = new Weapon();
             weapon.Type = Type.Rifle;
             weapon.Name = "AWP";
             weapon.Price = 4750;
