@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Web;
 
 namespace CSRandom
 {
@@ -13,7 +9,7 @@ namespace CSRandom
         public static int money;
         public static int next;
 
-        public static List<Weapon> GetWeapons(int _money, Side side, bool topup)
+        public static List<Weapon> BuyWeapons(int _money, Side side, bool topup, bool donation)
         {
             money = _money;
             IEnumerable<Weapon> allWeaponsForType = WEAPONS.Where(w => w.Side == side || w.Side == Side.Both).OrderBy(w => w.Type).ThenBy(x => x.Key);
@@ -55,6 +51,10 @@ namespace CSRandom
                 }
 
             }
+            if (donation)
+            {
+                return selectedWeapons;
+            }
             int grenadeCount = 0;
             if (selectedWeapons.Count == 0 || topup)
             {
@@ -62,8 +62,7 @@ namespace CSRandom
                 if (weapon != null)
                     selectedWeapons.Add(weapon);
             }
-            //int percentage = RandomNumber.Between(0, 100);
-            int percentage = 100;
+            int percentage = RandomNumber.Between(0, 100);
             List<Weapon> grenades = new List<Weapon>();
             if (percentage >= 25 && percentage < 50)
                 grenadeCount = 1;
@@ -74,7 +73,7 @@ namespace CSRandom
 
             while (grenadeCount > 0)
             {
-                var grenade = GetGrenade(allWeaponsForType, grenades);
+                var grenade = BuyGrenade(allWeaponsForType, grenades);
                 if (grenade == null)
                     break;
                 grenades.Add(grenade);
@@ -85,7 +84,8 @@ namespace CSRandom
         }
 
 
-        public static Weapon GetGrenade(IEnumerable<Weapon> allWeapons, List<Weapon> grenades)
+
+        public static Weapon BuyGrenade(IEnumerable<Weapon> allWeapons, List<Weapon> grenades)
         {
             Weapon weapon = null;
 

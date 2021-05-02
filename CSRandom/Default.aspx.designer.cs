@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CSRandom {
-    
-    
-    public partial class _Default {
-        
+namespace CSRandom
+{
+
+
+    public partial class _Default
+    {
+
         /// <summary>
         /// ctRb control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButton ctRb;
-        
+
         /// <summary>
         /// tRb control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButton tRb;
-        
+
         /// <summary>
         /// topupCheck control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox topupCheck;
-        
+
         /// <summary>
         /// CheckBox1 control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox CheckBox1;
-        
+
         /// <summary>
         /// CheckBox2 control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox CheckBox2;
-        
+
         /// <summary>
         /// weaponsDDL control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList weaponsDDL;
-        
+
         /// <summary>
         /// radioCasual control.
         /// </summary>
@@ -74,7 +76,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButton radioCasual;
-        
+
         /// <summary>
         /// radioCompetitive control.
         /// </summary>
@@ -83,7 +85,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButton radioCompetitive;
-        
+
         /// <summary>
         /// helmetChk control.
         /// </summary>
@@ -92,7 +94,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox helmetChk;
-        
+
         /// <summary>
         /// armorChk control.
         /// </summary>
@@ -101,7 +103,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox armorChk;
-        
+
         /// <summary>
         /// amountTxt control.
         /// </summary>
@@ -110,7 +112,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox amountTxt;
-        
+
         /// <summary>
         /// getWeaponsBtn control.
         /// </summary>
@@ -119,7 +121,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button getWeaponsBtn;
-        
+
         /// <summary>
         /// mainWeaponLbl control.
         /// </summary>
@@ -128,7 +130,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label mainWeaponLbl;
-        
+
         /// <summary>
         /// pistolLbl control.
         /// </summary>
@@ -137,7 +139,7 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label pistolLbl;
-        
+
         /// <summary>
         /// grenadeLbl control.
         /// </summary>
@@ -146,7 +148,16 @@ namespace CSRandom {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label grenadeLbl;
-        
+
+        /// <summary>
+        /// donationLbl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label donationLbl;
+
         /// <summary>
         /// keysLbl control.
         /// </summary>

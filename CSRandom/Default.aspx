@@ -140,6 +140,10 @@
         <asp:Label runat="server" ID="grenadeLbl" Text="None"></asp:Label>
     </div>
     <div>
+        Donation:
+        <asp:Label runat="server" ID="donationLbl" Text="None"></asp:Label>
+    </div>
+    <div>
         Keys:
         <asp:Label runat="server" ID="keysLbl" Text="None"></asp:Label>
     </div>

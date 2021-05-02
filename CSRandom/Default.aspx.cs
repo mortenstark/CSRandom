@@ -26,9 +26,14 @@ namespace CSRandom
                 Convert.ToInt32(amountTxt.Text);
             }
             catch { return; }
-            var moneyTxt = amountTxt.Text;
-            
-            List<Weapon> weapons = Controller.GetWeapons(Convert.ToInt32(amountTxt.Text), side, topupCheck.Checked);
+            var amount = Convert.ToInt32(amountTxt.Text);
+            var donate = amount >= 5800;
+            Weapon donation = null;
+            List<Weapon> weapons = Controller.BuyWeapons(amount, side, topupCheck.Checked, false);
+            if (donate)
+            {
+                donation = Controller.BuyWeapons(Controller.money, side, topupCheck.Checked, true).FirstOrDefault();
+            }
             var mainWeapon = weapons.Where(x => x.Type == Type.Heavy || x.Type == Type.Rifle || x.Type == Type.Smg).FirstOrDefault();
             if (mainWeapon != null)
                 mainWeaponLbl.Text = mainWeapon.Name;
@@ -52,6 +57,16 @@ namespace CSRandom
             else
                 grenadeLbl.Text = "None";
             var keys = "";
+            if (donation != null)
+            {
+                donationLbl.Text = donation.Name;
+                keys += (int)donation.Type + ", " + donation.Key + ", ";
+            }
+            else
+            {
+                donationLbl.Text = "None";
+            }
+
             if (mainWeapon != null)
             {
                 keys += (int)mainWeapon.Type + ", " + mainWeapon.Key + ", ";
@@ -68,6 +83,7 @@ namespace CSRandom
                     keys += nade.Key + ", ";
                 }
             }
+            keys.TrimEnd(',');
             keysLbl.Text = keys;
             topupCheck.Checked = false;
         }
