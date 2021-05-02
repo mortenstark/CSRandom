@@ -20,12 +20,8 @@ namespace CSRandom
             {
                 if (money >= 5200)
                 {
-                    next = RandomNumber.Between(1, 3);
+                    next = RandomNumber.Between(1, 2);
                     if (next == 1)
-                    {
-                        weapon = WEAPONS.Where(w => w.BuyName == "m249").FirstOrDefault();
-                    }
-                    else if (next == 2)
                     {
                         if (side == Side.Terrorist)
                         {
@@ -220,14 +216,14 @@ namespace CSRandom
             weapon.BuyName = "mag7";
             weapons.Add(weapon);
 
-            weapon = new Weapon();
-            weapon.Type = Type.Heavy;
-            weapon.Name = "M249";
-            weapon.Price = 5200;
-            weapon.Side = Side.Both;
-            weapon.Key = 4;
-            weapon.BuyName = "m249";
-            weapons.Add(weapon);
+            //weapon = new Weapon();
+            //weapon.Type = Type.Heavy;
+            //weapon.Name = "M249";
+            //weapon.Price = 5200;
+            //weapon.Side = Side.Both;
+            //weapon.Key = 4;
+            //weapon.BuyName = "m249";
+            //weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Smg;
