@@ -9,10 +9,6 @@ namespace CSRandom
 {
     public partial class _Default : Page
     {
-        protected void Page_Load(object sender, EventArgs e)
-        {
-            Controller.CreateWeapons();
-        }
 
         public void gameTypeCheckedChanged(Object sender, EventArgs e)
         {

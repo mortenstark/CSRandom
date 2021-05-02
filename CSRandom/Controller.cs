@@ -9,18 +9,14 @@ namespace CSRandom
 {
     public class Controller
     {
-        public static List<Weapon> Weapons = new List<Weapon>();
+        public static readonly List<Weapon> WEAPONS = CreateWeapons();
         public static int money;
         public static int next;
 
         public static List<Weapon> GetWeapons(int _money, Side side, bool topup)
         {
             money = _money;
-            if (Weapons.Count == 0)
-            {
-                CreateWeapons();
-            }
-            IOrderedEnumerable<Weapon> allWeapons = Weapons.Where(w => w.Side == side || w.Side == Side.Both).OrderBy(w => w.Type).ThenBy(x => x.Key);
+            IEnumerable<Weapon> allWeaponsForType = WEAPONS.Where(w => w.Side == side || w.Side == Side.Both).OrderBy(w => w.Type).ThenBy(x => x.Key);
             List<Weapon> selectedWeapons = new List<Weapon>();
             next = RandomNumber.Between(2, 4);
             Weapon weapon = new Weapon();
@@ -31,56 +27,29 @@ namespace CSRandom
                     next = RandomNumber.Between(1, 3);
                     if (next == 1)
                     {
-                        weapon = new Weapon();
-                        weapon.Type = Type.Heavy;
-                        weapon.Name = "M249";
-                        weapon.Price = 5200;
-                        weapon.Side = Side.Both;
-                        weapon.Key = 4;
-                        weapon.BuyName = "m249";
-                        Weapons.Add(weapon);
+                        weapon = WEAPONS.Where(w => w.BuyName == "m249").FirstOrDefault();
                     }
                     else if (next == 2)
                     {
                         if (side == Side.Terrorist)
                         {
-                            weapon = new Weapon();
-                            weapon.Type = Type.Rifle;
-                            weapon.Name = "G3SG1";
-                            weapon.Price = 5000;
-                            weapon.Side = Side.Terrorist;
-                            weapon.Key = 6;
-                            weapon.BuyName = "g3sg1";
-                            Weapons.Add(weapon);
+                            weapon = WEAPONS.Where(w => w.BuyName == "g3sg1").FirstOrDefault();
                         }
                         else
                         {
-                            weapon = new Weapon();
-                            weapon.Type = Type.Rifle;
-                            weapon.Name = "SCAR-20";
-                            weapon.Price = 5000;
-                            weapon.Side = Side.CounterTerrorist;
-                            weapon.Key = 6;
-                            weapon.BuyName = "scar20";
-                            Weapons.Add(weapon);
+                            weapon = WEAPONS.Where(w => w.BuyName == "scar20").FirstOrDefault();
                         }
                     }
                     else
                     {
-                        weapon = new Weapon();
-                        weapon.Type = Type.Rifle;
-                        weapon.Name = "AWP";
-                        weapon.Price = 4750;
-                        weapon.Side = Side.Both;
-                        weapon.Key = 5;
-                        weapon.BuyName = "awp";
+                        weapon = WEAPONS.Where(w => w.BuyName == "awp").FirstOrDefault();
                     }
                     selectedWeapons.Add(weapon);
                     money -= weapon.Price;
                 }
                 else
                 {
-                    weapon = GetWeaponType(allWeapons, (Type)next, selectedWeapons);
+                    weapon = BuyWeaponType(allWeaponsForType, (Type)next);
                     if (weapon != null)
                         selectedWeapons.Add(weapon);
                 }
@@ -89,11 +58,13 @@ namespace CSRandom
             int grenadeCount = 0;
             if (selectedWeapons.Count == 0 || topup)
             {
-                weapon = GetWeaponType(allWeapons, Type.Pistol, selectedWeapons);
+                weapon = BuyWeaponType(allWeaponsForType, Type.Pistol);
                 if (weapon != null)
                     selectedWeapons.Add(weapon);
             }
-            int percentage = RandomNumber.Between(0, 100);
+            //int percentage = RandomNumber.Between(0, 100);
+            int percentage = 100;
+            List<Weapon> grenades = new List<Weapon>();
             if (percentage >= 25 && percentage < 50)
                 grenadeCount = 1;
             else if (percentage >= 50 && percentage < 75)
@@ -103,99 +74,54 @@ namespace CSRandom
 
             while (grenadeCount > 0)
             {
-                weapon = GetWeaponType(allWeapons, Type.Grenade, selectedWeapons);
-                if (weapon == null)
+                var grenade = GetGrenade(allWeaponsForType, grenades);
+                if (grenade == null)
                     break;
-                selectedWeapons.Add(weapon);
+                grenades.Add(grenade);
                 grenadeCount--;
             }
-            WriteToFile(selectedWeapons);
+            selectedWeapons.AddRange(grenades);
             return selectedWeapons;
         }
 
-        public static List<Weapon> GetNadesAndGun(int _money, Side side)
-        {
-            money = _money;
-            IOrderedEnumerable<Weapon> allWeapons = Weapons.Where(w => w.Side == side || w.Side == Side.Both).OrderBy(w => w.Type).ThenBy(x => x.Key);
-            List<Weapon> selectedWeapons = new List<Weapon>();
-            next = RandomNumber.Between(2, 4);
-            Weapon weapon = GetWeaponType(allWeapons, (Type)next, selectedWeapons);
-            if (weapon != null)
-                selectedWeapons.Add(weapon);
 
-            int grenadeCount = 0;
-            if (weapon == null)
-            {
-                weapon = GetWeaponType(allWeapons, Type.Pistol, selectedWeapons);
-                if (weapon != null)
-                    selectedWeapons.Add(weapon);
-            }
-            int percentage = RandomNumber.Between(0, 100);
-            if (percentage >= 25 && percentage < 50)
-                grenadeCount = 1;
-            else if (percentage >= 50 && percentage < 75)
-                grenadeCount = 2;
-            else if (percentage >= 75)
-                grenadeCount = 3;
-
-            while (grenadeCount > 0)
-            {
-                weapon = GetWeaponType(allWeapons, Type.Grenade, selectedWeapons);
-                if (weapon == null)
-                    break;
-                selectedWeapons.Add(weapon);
-                grenadeCount--;
-            }
-            WriteToFile(selectedWeapons);
-            return selectedWeapons;
-        }
-
-        private static void WriteToFile(List<Weapon> selectedWeapons)
-        {
-            StringBuilder txt = new StringBuilder();
-            foreach (var w in selectedWeapons)
-            {
-                txt.Append("buy " + w.BuyName + "; ");
-            }
-            //            File.WriteAllText(@"\\DESKTOP-5QJ7FUL\c$\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\csgo\cfg\buytest2.cfg", txt.ToString());
-        }
-
-        public static Weapon GetWeaponType(IEnumerable<Weapon> allWeapons, Type type, List<Weapon> grenades)
+        public static Weapon GetGrenade(IEnumerable<Weapon> allWeapons, List<Weapon> grenades)
         {
             Weapon weapon = null;
 
-            switch (type)
+            var nades = allWeapons.Where(w => w.Type == Type.Grenade && w.Price <= money && !grenades.Contains(w)).ToList();
+            if (nades.Count() == 0)
+                return weapon;
+            else
             {
-                case Type.Grenade:
-                    var nades = allWeapons.Except(grenades).Where(w => w.Type == Type.Grenade && w.Price <= money).ToList();
-                    if (nades.Count() == 0)
-                        break;
-                    else
-                    {
-                        next = RandomNumber.Between(0, nades.Count() - 1);
-                        weapon = nades[next];
-                        money -= weapon.Price;
-                    }
-                    break;
-                default:
-                    var weapons = allWeapons.Where(w => w.Type == type).ToList();
-                    next = RandomNumber.Between(0, weapons.Count() - 1);
-                    weapon = weapons[next];
-                    if (weapon.Price > money || weapon.Price == 0)
-                    {
-                        weapon = null;
-                        break;
-                    }
-                    money -= weapon.Price;
-                    break;
+                next = RandomNumber.Between(0, nades.Count() - 1);
+                weapon = nades[next];
+                money -= weapon.Price;
             }
+            return weapon;
+        }
 
+        public static Weapon BuyWeaponType(IEnumerable<Weapon> allWeapons, Type type)
+        {
+            Weapon weapon = null;
+            var weapons = allWeapons.Where(w => w.Type == type).ToList();
+            next = RandomNumber.Between(0, weapons.Count() - 1);
+            weapon = weapons[next];
+            if (weapon.Price > money || weapon.Price == 0)
+            {
+                weapon = null;
+            }
+            else
+            {
+                money -= weapon.Price;
+            }
             return weapon;
         }
 
 
-        public static void CreateWeapons()
+        public static List<Weapon> CreateWeapons()
         {
+            var weapons = new List<Weapon>();
             var weapon = new Weapon();
             weapon.Type = Type.Pistol;
             weapon.Name = "P250";
@@ -203,7 +129,24 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 3;
             weapon.BuyName = "p250";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
+
+            weapon = new Weapon();
+            weapon.Type = Type.Pistol;
+            weapon.Name = "USP-S";
+            weapon.Key = 1;
+            weapon.Price = 0;
+            weapon.Side = Side.CounterTerrorist;
+            weapons.Add(weapon);
+
+            weapon = new Weapon();
+            weapon.Type = Type.Pistol;
+            weapon.Name = "Five-Seven";
+            weapon.Price = 500;
+            weapon.Side = Side.CounterTerrorist;
+            weapons.Add(weapon);
+            weapon.Key = 4;
+            weapon.BuyName = "fn57";
 
             weapon = new Weapon();
             weapon.Type = Type.Pistol;
@@ -212,7 +155,7 @@ namespace CSRandom
             weapon.Side = Side.Terrorist;
             weapon.Key = 1;
             weapon.BuyName = "glock18";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Pistol;
@@ -221,7 +164,7 @@ namespace CSRandom
             weapon.Side = Side.Terrorist;
             weapon.Key = 4;
             weapon.BuyName = "tec9";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Pistol;
@@ -230,7 +173,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 5;
             weapon.BuyName = "deagle";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Heavy;
@@ -239,7 +182,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 1;
             weapon.BuyName = "nova";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Heavy;
@@ -248,7 +191,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 2;
             weapon.BuyName = "xm1014";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Heavy;
@@ -257,16 +200,7 @@ namespace CSRandom
             weapon.Side = Side.Terrorist;
             weapon.Key = 3;
             weapon.BuyName = "mag7";
-            Weapons.Add(weapon);
-
-            //weapon = new Weapon();
-            //weapon.Type = Type.Heavy;
-            //weapon.Name = "M249";
-            //weapon.Price = 5200;
-            //weapon.Side = Side.Both;
-            //weapon.Key = 4;
-            //weapon.BuyName = "m249";
-            //Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Heavy;
@@ -275,7 +209,25 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 5;
             weapon.BuyName = "negev";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
+
+            weapon = new Weapon();
+            weapon.Type = Type.Heavy;
+            weapon.Name = "MAG-7";
+            weapon.Price = 1300;
+            weapon.Side = Side.CounterTerrorist;
+            weapon.Key = 3;
+            weapon.BuyName = "mag7";
+            weapons.Add(weapon);
+
+            weapon = new Weapon();
+            weapon.Type = Type.Heavy;
+            weapon.Name = "M249";
+            weapon.Price = 5200;
+            weapon.Side = Side.Both;
+            weapon.Key = 4;
+            weapon.BuyName = "m249";
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Smg;
@@ -284,7 +236,7 @@ namespace CSRandom
             weapon.Side = Side.Terrorist;
             weapon.Key = 1;
             weapon.BuyName = "mac10";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Smg;
@@ -293,7 +245,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 2;
             weapon.BuyName = "mp7";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Smg;
@@ -302,7 +254,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 3;
             weapon.BuyName = "ump45";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Smg;
@@ -311,7 +263,16 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 4;
             weapon.BuyName = "p90";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
+
+            weapon = new Weapon();
+            weapon.Type = Type.Smg;
+            weapon.Name = "MP9";
+            weapon.Price = 1250;
+            weapon.Side = Side.CounterTerrorist;
+            weapon.Key = 1;
+            weapon.BuyName = "mp9";
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Smg;
@@ -320,7 +281,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 5;
             weapon.BuyName = "bizon";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Rifle;
@@ -329,7 +290,7 @@ namespace CSRandom
             weapon.Side = Side.Terrorist;
             weapon.Key = 1;
             weapon.BuyName = "galilar";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Rifle;
@@ -338,7 +299,7 @@ namespace CSRandom
             weapon.Side = Side.Terrorist;
             weapon.Key = 2;
             weapon.BuyName = "ak47";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Rifle;
@@ -347,7 +308,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 3;
             weapon.BuyName = "ssg08";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Rifle;
@@ -356,7 +317,35 @@ namespace CSRandom
             weapon.Side = Side.Terrorist;
             weapon.Key = 4;
             weapon.BuyName = "sg556";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
+
+            weapon = new Weapon();
+            weapon.Type = Type.Rifle;
+            weapon.Name = "Famas";
+            weapon.Price = 2250;
+            weapon.Side = Side.CounterTerrorist;
+            weapon.Key = 1;
+            weapon.BuyName = "famas";
+            weapons.Add(weapon);
+
+            weapon = new Weapon();
+            weapon.Type = Type.Rifle;
+            weapon.Name = "M4A1-S";
+            weapon.Price = 3100;
+            weapon.Side = Side.CounterTerrorist;
+            weapon.Key = 2;
+            weapon.BuyName = "m4a1_silencer";
+            weapons.Add(weapon);
+
+            weapon = new Weapon();
+            weapon.Type = Type.Rifle;
+            weapon.Name = "AUG";
+            weapon.Price = 3300;
+            weapon.Side = Side.CounterTerrorist;
+            weapon.Key = 4;
+            weapon.BuyName = "aug";
+            weapons.Add(weapon);
+
 
             weapon = new Weapon();
             weapon.Type = Type.Rifle;
@@ -365,7 +354,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 5;
             weapon.BuyName = "awp";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Rifle;
@@ -374,7 +363,16 @@ namespace CSRandom
             weapon.Side = Side.Terrorist;
             weapon.Key = 6;
             weapon.BuyName = "g3sg1";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
+
+            weapon = new Weapon();
+            weapon.Type = Type.Rifle;
+            weapon.Name = "SCAR-20";
+            weapon.Price = 5000;
+            weapon.Side = Side.CounterTerrorist;
+            weapon.Key = 6;
+            weapon.BuyName = "scar20";
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Grenade;
@@ -383,7 +381,7 @@ namespace CSRandom
             weapon.Side = Side.Terrorist;
             weapon.Key = 1;
             weapon.BuyName = "molotov";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Grenade;
@@ -392,7 +390,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 2;
             weapon.BuyName = "decoy";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Grenade;
@@ -401,7 +399,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 3;
             weapon.BuyName = "flashbang";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Grenade;
@@ -410,7 +408,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 4;
             weapon.BuyName = "hegrenade";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Grenade;
@@ -420,78 +418,7 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 5;
             weapon.BuyName = "smokegrenade";
-            Weapons.Add(weapon);
-
-            weapon = new Weapon();
-            weapon.Type = Type.Pistol;
-            weapon.Name = "USP-S";
-            weapon.Key = 1;
-            weapon.Price = 0;
-            weapon.Side = Side.CounterTerrorist;
-            Weapons.Add(weapon);
-
-            weapon = new Weapon();
-            weapon.Type = Type.Pistol;
-            weapon.Name = "Five-Seven";
-            weapon.Price = 500;
-            weapon.Side = Side.CounterTerrorist;
-            Weapons.Add(weapon);
-            weapon.Key = 4;
-            weapon.BuyName = "fn57";
-            weapon = new Weapon();
-
-            weapon.Type = Type.Heavy;
-            weapon.Name = "MAG-7";
-            weapon.Price = 1300;
-            weapon.Side = Side.CounterTerrorist;
-            weapon.Key = 3;
-            weapon.BuyName = "mag7";
-            Weapons.Add(weapon);
-
-            weapon = new Weapon();
-            weapon.Type = Type.Smg;
-            weapon.Name = "MP9";
-            weapon.Price = 1250;
-            weapon.Side = Side.CounterTerrorist;
-            weapon.Key = 1;
-            weapon.BuyName = "mp9";
-            Weapons.Add(weapon);
-
-            weapon = new Weapon();
-            weapon.Type = Type.Rifle;
-            weapon.Name = "Famas";
-            weapon.Price = 2250;
-            weapon.Side = Side.CounterTerrorist;
-            weapon.Key = 1;
-            weapon.BuyName = "famas";
-            Weapons.Add(weapon);
-
-            weapon = new Weapon();
-            weapon.Type = Type.Rifle;
-            weapon.Name = "M4A1-S";
-            weapon.Price = 3100;
-            weapon.Side = Side.CounterTerrorist;
-            weapon.Key = 2;
-            weapon.BuyName = "m4a1_silencer";
-            Weapons.Add(weapon);
-
-            weapon = new Weapon();
-            weapon.Type = Type.Rifle;
-            weapon.Name = "AUG";
-            weapon.Price = 3300;
-            weapon.Side = Side.CounterTerrorist;
-            weapon.Key = 4;
-            weapon.BuyName = "aug";
-            Weapons.Add(weapon);
-
-            //weapon = new Weapon();
-            //weapon.Type = Type.Rifle;
-            //weapon.Name = "SCAR-20";
-            //weapon.Price = 5000;
-            //weapon.Side = Side.CounterTerrorist;
-            //weapon.Key = 6;
-            //weapon.BuyName = "scar20";
-            //Weapons.Add(weapon);
+            weapons.Add(weapon);
 
             weapon = new Weapon();
             weapon.Type = Type.Grenade;
@@ -500,7 +427,7 @@ namespace CSRandom
             weapon.Side = Side.CounterTerrorist;
             weapon.Key = 1;
             weapon.BuyName = "incgrenade";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
             weapon = new Weapon();
 
             weapon.Type = Type.Equipment;
@@ -509,7 +436,8 @@ namespace CSRandom
             weapon.Side = Side.Both;
             weapon.Key = 3;
             weapon.BuyName = "taser23";
-            Weapons.Add(weapon);
+            weapons.Add(weapon);
+            return weapons;
         }
     }
 }
